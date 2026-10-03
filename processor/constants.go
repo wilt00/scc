@@ -15506,6 +15506,43 @@ var languageDatabase = map[string]Language{
 		FileNames:  []string{},
 		SheBangs:   []string{},
 	},
+	"VBScript": {
+		LineComment: []string{
+			"'",
+			"Rem",
+		},
+		ComplexityChecks: []string{
+			"for ",
+			"if ",
+			"elseif ",
+			"while ",
+			"do ",
+			"select case",
+		},
+		Extensions: []string{
+			"vbs",
+		},
+		ExtensionFile: false,
+		MultiLine:     [][]string{},
+		Quotes: []Quote{
+			{
+				Start:        "\"",
+				End:          "\"",
+				IgnoreEscape: false,
+				DocString:    false,
+				Delimited:    false,
+			},
+		},
+		NestedMultiLine: false,
+		LineSplice:      false,
+		Escape:          "",
+		CaseInsensitive: true,
+		CommentIsWord:   false,
+		Keywords:        []string{},
+		Heuristics:      []Heuristic{},
+		FileNames:       []string{},
+		SheBangs:        []string{},
+	},
 	"VHDL": {
 		LineComment: []string{
 			"--",

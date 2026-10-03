@@ -8650,6 +8650,19 @@
       }
     ]
   },
+  "VBScript": {
+    "complexitychecks": ["for ", "if ", "elseif ", "while ", "do ", "select case"],
+    "extensions": ["vbs"],
+    "line_comment": ["'", "Rem"],
+    "caseinsensitive": true,
+    "multi_line": [],
+    "quotes": [
+      {
+        "end": "\"",
+        "start": "\""
+      }
+    ]
+  },
   "Vue": {
     "complexitychecks": [
       "for ",

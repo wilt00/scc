@@ -19,6 +19,22 @@ func TestDetectLanguage(t *testing.T) {
 	AllowListExtensions = []string{}
 }
 
+func TestDetectVBScript(t *testing.T) {
+	ProcessConstants()
+
+	possible, ext := DetectLanguage("launch-hidden.vbs")
+	if ext != "vbs" || !slices.Contains(possible, "VBScript") {
+		t.Fatalf("DetectLanguage(launch-hidden.vbs) = %v, %q; want VBScript, vbs", possible, ext)
+	}
+
+	job := FileJob{Language: "VBScript"}
+	job.SetContent("Option Explicit\n\nDim shell\nSet shell = CreateObject(\"WScript.Shell\")\n' hide the window\nshell.Run \"it's hidden\", 0, False\nREM another comment\n")
+	CountStats(&job)
+	if job.Lines != 7 || job.Code != 4 || job.Comment != 2 || job.Blank != 1 {
+		t.Errorf("VBScript counts = lines %d, code %d, comment %d, blank %d; want 7, 4, 2, 1", job.Lines, job.Code, job.Comment, job.Blank)
+	}
+}
+
 func TestDetectLanguageMojoExtensions(t *testing.T) {
 	ProcessConstants()
 
