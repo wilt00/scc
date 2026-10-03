@@ -5,6 +5,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"errors"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -647,6 +648,13 @@ func TestRegressionOutputWriteFailureExits(t *testing.T) {
 	}
 	// A path under a directory that does not exist: os.WriteFile cannot create it.
 	bad := filepath.Join(dir, "missing", "out.json")
+	// Match the OS-provided reason instead of assuming Unix's English errno text.
+	writeErr := os.WriteFile(bad, nil, 0644)
+	var pathErr *os.PathError
+	if !errors.As(writeErr, &pathErr) || !os.IsNotExist(writeErr) {
+		t.Fatalf("expected missing parent directory, got %v", writeErr)
+	}
+	reason := pathErr.Err.Error()
 
 	cases := []struct {
 		name string
@@ -664,8 +672,8 @@ func TestRegressionOutputWriteFailureExits(t *testing.T) {
 			if strings.Contains(out, "results written to") {
 				t.Errorf("a failed write must not print a success message, output:\n%s", out)
 			}
-			if !strings.Contains(out, "no such file or directory") {
-				t.Errorf("a failed write must report the reason, output:\n%s", out)
+			if !strings.Contains(out, bad) || !strings.Contains(out, reason) {
+				t.Errorf("a failed write must report the path and reason %q, output:\n%s", reason, out)
 			}
 			if _, statErr := os.Stat(bad); statErr == nil {
 				t.Errorf("no file should exist at %s", bad)

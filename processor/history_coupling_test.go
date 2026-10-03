@@ -37,7 +37,8 @@ func TestCouplingTargetCandidatesBarePathUnchanged(t *testing.T) {
 }
 
 func TestCouplingTargetCandidatesAbsoluteBecomesRepoRelative(t *testing.T) {
-	got := couplingTargetCandidates("/repo", filepath.FromSlash("/repo/processor/constants.go"))
+	repoRoot := filepath.Join(t.TempDir(), "repo")
+	got := couplingTargetCandidates(repoRoot, filepath.Join(repoRoot, "processor", "constants.go"))
 	if !hasCandidate(got, "processor/constants.go") {
 		t.Errorf("expected absolute path made repo-relative, got %v", got)
 	}
@@ -46,10 +47,12 @@ func TestCouplingTargetCandidatesAbsoluteBecomesRepoRelative(t *testing.T) {
 // A path outside the repository can never be a git path, so it must yield no
 // candidates rather than a "../" form that would be looked up and miss.
 func TestCouplingTargetCandidatesRejectsEscapingPaths(t *testing.T) {
-	if got := couplingTargetCandidates("/repo", filepath.FromSlash("/etc/passwd")); len(got) != 0 {
+	repoRoot := filepath.Join(t.TempDir(), "repo")
+	outside := filepath.Join(filepath.Dir(repoRoot), "elsewhere", "passwd")
+	if got := couplingTargetCandidates(repoRoot, outside); len(got) != 0 {
 		t.Errorf("expected no candidates for a path outside the repo, got %v", got)
 	}
-	if got := couplingTargetCandidates("/repo", "../../../etc/passwd"); len(got) != 0 {
+	if got := couplingTargetCandidates(repoRoot, "../../../etc/passwd"); len(got) != 0 {
 		t.Errorf("expected no candidates for an escaping relative path, got %v", got)
 	}
 }
